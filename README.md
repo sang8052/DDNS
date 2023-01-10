@@ -119,19 +119,21 @@ python run.py -c /path/to/config.json
 
 #### 配置参数表
 
-|  key   |        type        | required |   default   |    description    | tips                                                                                                        |
-| :----: | :----------------: | :------: | :---------: | :---------------: | ----------------------------------------------------------------------------------------------------------- |
-|   id   |       string       |    √     |     无      |    api 访问 ID    | Cloudflare 为邮箱(使用 Token 时留空)<br>HE.net 可留空                                                       |
-| token  |       string       |    √     |     无      |  api 授权 token   | 部分平台叫 secret key , **反馈粘贴时删除**                                                                  |
-|  dns   |       string       |    No    | `"dnspod"`  |    dns 服务商     | 阿里 DNS 为`alidns`,<br>Cloudflare 为 `cloudflare`,<br>dns.com 为 `dnscom`,<br>DNSPOD 国内为 `dnspod`,<br>DNSPOD 国际版为 `dnspod_com`,<br>HE.net 为`he`,<br>华为 DNS 为`huaweidns`,<br>自定义回调为`callback` |
-|  ipv4  |       array        |    No    |    `[]`     |   ipv4 域名列表   | 为`[]`时,不会获取和更新 IPv4 地址                                                                           |
-|  ipv6  |       array        |    No    |    `[]`     |   ipv6 域名列表   | 为`[]`时,不会获取和更新 IPv6 地址                                                                           |
-| index4 | string\|int\|array |    No    | `"default"` |   ipv4 获取方式   | 可设置`网卡`,`内网`,`公网`,`正则`等方式                                                                     |
-| index6 | string\|int\|array |    No    | `"default"` |   ipv6 获取方式   | 可设置`网卡`,`内网`,`公网`,`正则`等方式                                                                     |
-|  ttl   |       number       |    No    |   `null`    | DNS 解析 TTL 时间 | 不设置采用 DNS 默认策略                                                                                     |
-| proxy  |       string       |    No    |     无      | http 代理`;`分割  | 多代理逐个尝试直到成功,`DIRECT`为直连                                                                       |
-| debug  |        bool        |    No    |   `false`   |   是否开启调试    | 运行异常时,打开调试输出,方便诊断错误                                                                        |
-| cache  |    string\|bool    |    No    |   `true`    |   是否缓存记录    | 正常情况打开避免频繁更新,默认位置为临时目录下`ddns.cache`,<br>也可以指定一个具体文件实现自定义文件缓存位置         |
+|   key   |       type        | required |    default     |  description  | tips                                                                                                                                                                                     |
+|:-------:|:-----------------:|:--------:|:--------------:|:-------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|   id    |      string       |    √     |       无        |   api 访问 ID   | Cloudflare 为邮箱(使用 Token 时留空)<br>HE.net 可留空                                                                                                                                               |
+|  token  |      string       |    √     |       无        | api 授权 token  | 部分平台叫 secret key , **反馈粘贴时删除**                                                                                                                                                           |
+|   dns   |      string       |    No    |   `"dnspod"`   |    dns 服务商    | 阿里 DNS 为`alidns`,<br>Cloudflare 为 `cloudflare`,<br>dns.com 为 `dnscom`,<br>DNSPOD 国内为 `dnspod`,<br>DNSPOD 国际版为 `dnspod_com`,<br>HE.net 为`he`,<br>华为 DNS 为`huaweidns`,<br>自定义回调为`callback` |
+|  ipv4   |       array       |    No    |      `[]`      |   ipv4 域名列表   | 为`[]`时,不会获取和更新 IPv4 地址                                                                                                                                                                   |
+|  ipv6   |       array       |    No    |      `[]`      |   ipv6 域名列表   | 为`[]`时,不会获取和更新 IPv6 地址                                                                                                                                                                   |
+| index4  | string\int\ array |    No    |  `"default"`   |   ipv4 获取方式   | 可设置`网卡`,`内网`,`公网`,`正则`等方式                                                                                                                                                                |
+| index6  |      string\      |   int\   |     array      |      No       | `"default"`                                                                                                                                                                              |   ipv6 获取方式   | 可设置`网卡`,`内网`,`公网`,`正则`等方式                                                                     |
+|   ttl   |      number       |    No    |     `null`     | DNS 解析 TTL 时间 | 不设置采用 DNS 默认策略                                                                                                                                                                           |
+|  proxy  |      string       |    No    |       无        | http 代理`;`分割  | 多代理逐个尝试直到成功,`DIRECT`为直连                                                                                                                                                                  |
+|  debug  |       bool        |    No    |    `false`     |    是否开启调试     | 运行异常时,打开调试输出,方便诊断错误                                                                                                                                                                      |
+|  cache  |    string\bool    |    No    |     `true`     |    是否缓存记录     | 正常情况打开避免频繁更新,默认位置为临时目录下`ddns.cache`,<br>也可以指定一个具体文件实现自定义文件缓存位置                                                                                                                           |
+| timeout |        int        |    √     |      300       |   ip地址的刷新时间   | 设置系统每隔多长时间自动刷新一次ip 地址,单位秒                                                                                                                                                                |                                                                                                                                                                    |
+|  port   |        int        |    √     |     8689       |  Flask 的端口号   | 请求http://localhost:port/api/get_ip/ 获取当前设备的ip,<br>请求http://localhost:port/api/refresh_ip/ 强制刷新ip                                                                                         |
 
 #### index4 和 index6 参数说明
 

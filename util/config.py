@@ -81,7 +81,6 @@ def __load_config(path="config.json", skip_auto_generation=False):
         error(' Config file `%s` does not exist!' % path)
         with open(path, 'w') as configfile:
             configure = {
-                "$schema": "https://ddns.newfuture.cc/schema/v2.8.json",
                 "id": "YOUR ID or EMAIL for DNS Provider",
                 "token": "YOUR TOKEN or KEY for DNS Provider",
                 "dns": "dnspod",
@@ -98,6 +97,8 @@ def __load_config(path="config.json", skip_auto_generation=False):
                 "ttl": None,
                 "proxy": None,
                 "debug": False,
+                "timeout": 300,
+                "port": 8689
             }
             dumpjson(configure, configfile, indent=2, sort_keys=True)
             sys.stdout.write(
