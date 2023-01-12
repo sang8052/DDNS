@@ -68,6 +68,7 @@ def request(method, action, param=None, **params):
     response = conn.getresponse()
     res = response.read().decode('utf8')
     conn.close()
+
     if response.status < 200 or response.status >= 300:
         warning('%s : error[%d]:%s', action, response.status, res)
         raise Exception(res)

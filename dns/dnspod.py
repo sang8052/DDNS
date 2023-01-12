@@ -48,6 +48,7 @@ def request(action, param=None, **params):
     info("%s/%s : %s", API.SITE, action, params)
     params[API.TOKEN_PARAM] = "%s,%s" % (Config.ID, Config.TOKEN)
     params[API.LENGTH] = "3000"  # 添加参数
+
     if Config.PROXY:
         conn = HTTPSConnection(Config.PROXY)
         conn.set_tunnel(API.SITE, 443)
@@ -61,6 +62,17 @@ def request(action, param=None, **params):
     response = conn.getresponse()
     res = response.read().decode('utf8')
     conn.close()
+
+    import requests
+    response = requests.request(API.METHOD,  "https://" + API.SITE + '/' + action, data=urlencode(params),
+                                headers={
+                                    "Content-type": "application/x-www-form-urlencoded",
+                                    "User-Agent": "DDNS/%s (ddns@newfuture.cc)" % environ.get("DDNS_VERSION", "1.0.0")
+                                })
+    response.status = response.status_code
+    res = response.text
+
+
 
     if response.status < 200 or response.status >= 300:
         warning('%s : error[%d]:%s', action, response.status, res)

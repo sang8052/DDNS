@@ -50,12 +50,18 @@ def request(param=None, **params):
     else:
         conn = HTTPSConnection(API.SITE)
 
-    conn.request(API.METHOD, '/' + API.ACTION, urlencode(params), {
-        "Content-type": "application/x-www-form-urlencoded"
-    })
-    response = conn.getresponse()
-    res = response.read().decode('utf8')
-    conn.close()
+    # conn.request(API.METHOD, '/' + API.ACTION, urlencode(params), {
+    #     "Content-type": "application/x-www-form-urlencoded"
+    # })
+    # response = conn.getresponse()
+    # res = response.read().decode('utf8')
+    # conn.close()
+
+    import requests
+    response = requests.request(API.METHOD,'/' + API.ACTION, data=urlencode(params),
+                                headers={"Content-type": "application/x-www-form-urlencoded"})
+    response.status = response.status_code
+    res = response.text
 
     if response.status < 200 or response.status >= 300:
         warning('%s : error[%d]:%s', API.ACTION, response.status, res)

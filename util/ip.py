@@ -2,6 +2,11 @@
 # -*- coding:utf-8 -*-
 from re import compile
 from os import name as os_name, popen
+import requests
+
+import urllib3
+urllib3.disable_warnings()
+
 from socket import socket, getaddrinfo, gethostname, AF_INET, AF_INET6, SOCK_DGRAM
 from logging import debug, error
 try:
@@ -49,9 +54,7 @@ def local_v4(i=0):  # 本地ipv4地址
 def _open(url, reg):
     try:
         debug("open: %s", url)
-        res = urlopen(
-            Request(url, headers={'User-Agent': 'curl/7.63.0-ddns'}),  timeout=60
-        ).read().decode('utf8', 'ignore')
+        res = requests.get(url,verify=False).text;
         debug("response: %s",  res)
         return compile(reg).search(res).group()
     except Exception as e:

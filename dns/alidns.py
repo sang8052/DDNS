@@ -76,16 +76,21 @@ def request(param=None, **params):
     params = signature(params)
     info("%s: %s", API.SITE, params)
 
-    if Config.PROXY:
-        conn = HTTPSConnection(Config.PROXY)
-        conn.set_tunnel(API.SITE, 443)
-    else:
-        conn = HTTPSConnection(API.SITE)
-    conn.request(API.METHOD, '/', urlencode(params),
-                 {"Content-type": "application/x-www-form-urlencoded"})
-    response = conn.getresponse()
-    data = response.read().decode('utf8')
-    conn.close()
+    # if Config.PROXY:
+    #     conn = HTTPSConnection(Config.PROXY)
+    #     conn.set_tunnel(API.SITE, 443)
+    # else:
+    #     conn = HTTPSConnection(API.SITE)
+    # conn.request(API.METHOD, '/', urlencode(params),
+    #              {"Content-type": "application/x-www-form-urlencoded"})
+    # response = conn.getresponse()
+    # data = response.read().decode('utf8')
+    # conn.close()
+
+    import requests
+    response = requests.request(API.METHOD, "https://" + API.SITE + '/',data= urlencode(params),headers= {"Content-type": "application/x-www-form-urlencoded"})
+    response.status = response.status_code
+    data = response.text
 
     if response.status < 200 or response.status >= 300:
         warning('%s : error[%d]: %s', params['Action'], response.status, data)

@@ -62,10 +62,19 @@ def request(method, action, param=None, **params):
     else:
         headers = {"Content-type": "application/json",
                    "X-Auth-Email": Config.ID, "X-Auth-Key": Config.TOKEN}
-    conn.request(method, '/client/v4/zones' + action, params, headers)
-    response = conn.getresponse()
-    res = response.read().decode('utf8')
-    conn.close()
+
+
+    # conn.request(method, '/client/v4/zones' + action, params, headers)
+    # response = conn.getresponse()
+    # res = response.read().decode('utf8')
+    # conn.close()
+
+    import requests
+    response = requests.request(API.METHOD, "https://" + API.SITE + '/client/v4/zones' + action, data=urlencode(params),
+                                headers={"Content-type": "application/x-www-form-urlencoded"})
+    response.status = response.status_code
+    res = response.text
+
     if response.status < 200 or response.status >= 300:
         warning('%s : error[%d]:%s', action, response.status, res)
         raise Exception(res)

@@ -6,6 +6,7 @@ DDNS
 @modified: rufengsuixing
 """
 from __future__ import print_function
+import platform
 from time import ctime, asctime
 from os import path, environ, name as os_name
 from tempfile import gettempdir
@@ -15,6 +16,7 @@ import sys,time,threading
 
 from flask import Flask,jsonify,request
 from gevent import pywsgi
+import dns
 
 from util import ip
 from util.cache import Cache
@@ -104,7 +106,9 @@ def change_dns_record(dns, proxy_list, **kw):
         record_type, domain = kw['record_type'], kw['domain']
         print('%s %s(%s) ==> %s [via %s]' %(asctime(), domain, record_type, kw['ip'], proxy))
         try:
-            return dns.update_record(domain, kw['ip'], record_type=record_type)
+            change_result =  dns.update_record(domain, kw['ip'], record_type=record_type)
+            print(change_result)
+            return  change_result
         except Exception as e:
             error(e)
     return False
@@ -128,7 +132,7 @@ def update_ip(ip_type, cache, dns, proxy_list):
     elif cache and (address == cache[ipname]):
         for domain in domains:
             print('%s %s(%s) ==> %s [via %s]' %(asctime(), domain, record_type, address, 'cache'))
-        return True
+        #return True
 
     update_fail = False  # https://github.com/NewFuture/DDNS/issues/16
     for domain in domains:
@@ -145,10 +149,10 @@ def updata_ip_main(is_api=False):
 
     # Dynamicly import the dns module as configuration
     dns_provider = str(get_config('dns', 'dnspod').lower())
-    dns = getattr(__import__('dns', fromlist=[dns_provider]), dns_provider)
-    dns.Config.ID = get_config('id')
-    dns.Config.TOKEN = get_config('token')
-    dns.Config.TTL = get_config('ttl')
+    odns = getattr(dns,dns_provider)
+    odns.Config.ID = get_config('id')
+    odns.Config.TOKEN = get_config('token')
+    odns.Config.TTL = get_config('ttl')
     if get_config('debug'):
         ip.DEBUG = get_config('debug')
         basicConfig(
@@ -173,12 +177,11 @@ def updata_ip_main(is_api=False):
     if cache is False:
         info("Cache is disabled!")
     elif get_config("config_modified_time") is None or get_config("config_modified_time") >= cache.time:
-        #warning("Cache file is out of dated.")
         cache.clear()
     elif not cache:
         debug("Cache is empty.")
-    update_ip('4', cache, dns, proxy_list)
-    update_ip('6', cache, dns, proxy_list)
+    update_ip('4', cache, odns, proxy_list)
+    update_ip('6', cache, odns, proxy_list)
 
 class backgroud_thread(threading.Thread):
     def __init__(self, ):
@@ -194,11 +197,14 @@ class backgroud_thread(threading.Thread):
 
 
 if __name__ == '__main__':
+
+
+    print("cache file path:" + path.join(gettempdir(), 'ddns.cache'))
     init_config(__description__, __doc__, __version__)
-    ipv4 = get_ip("4", get_config('index' + "4", "default"))
     updata_ip_main()
     back_thread = backgroud_thread()
     back_thread.start()
+    print("Flask Server Start!")
     # 启动 Flask 进程
     server = pywsgi.WSGIServer(("0.0.0.0", get_config("port")), app)
     server.serve_forever()

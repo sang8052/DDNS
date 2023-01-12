@@ -125,12 +125,20 @@ def request(method, path, param=None, body=None, **params):
         conn.set_tunnel(API.SITE, 443)
     else:
         conn = HTTPSConnection(API.SITE)
-    conn.request(method, API.SCHEME + "://" + API.SITE +
-                 path + '?' + query, body, headers)
-    info(API.SCHEME + "://" + API.SITE + path + '?' + query, body)
-    resp = conn.getresponse()
-    data = resp.read().decode('utf8')
-    resp.close()
+
+    # conn.request(method, API.SCHEME + "://" + API.SITE +
+    #              path + '?' + query, body, headers)
+    # info(API.SCHEME + "://" + API.SITE + path + '?' + query, body)
+    # resp = conn.getresponse()
+    # data = resp.read().decode('utf8')
+    # resp.close()
+
+    import requests
+    resp = requests.request(API.METHOD, "https://" + API.SITE  + path + '?' + query,data=body, headers=headers)
+    resp.status = resp.status_code
+    data = resp.text
+
+
     if resp.status < 200 or resp.status >= 300:
 
         warning('%s : error[%d]: %s', path, resp.status, data)
